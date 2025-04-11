@@ -30,18 +30,24 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 def generate_launch_description():
     ld = LaunchDescription()
+    uart_port_arg = DeclareLaunchArgument(
+            'uart_port',
+            default_value='/dev/ttyUSB0')
     config = os.path.join(
         get_package_share_directory('bno055'),
         'config',
         'bno055_params.yaml'
         )
-        
+    uart_port=LaunchConfiguration("uart_port")
     node=Node(
         package = 'bno055',
         executable = 'bno055',
-        parameters = [config]
+        parameters = [config,
+        {'uart_port': uart_port}]
     )
     ld.add_action(node)
     return ld
